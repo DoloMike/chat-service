@@ -1,14 +1,17 @@
 {
-  "name": "chat-service",
-  "version": "1.0.0",
-  "description": "socketio chat room",
-  "main": "index.js",
-  "author": "Michael Roberts",
-  "license": "MIT",
-  "dependencies": {
-    "dotenv": "^6.2.0",
-    "express": "^4.16.4",
-    "mongoose": "^5.4.0",
-    "socket.io": "^2.2.0"
-  }
+	"name": "chat-service",
+	"version": "1.0.0",
+	"description": "socketio chat room",
+	"main": "index.js",
+	"author": "Michael Roberts",
+	"license": "MIT",
+	"scripts": {
+		"start": "node src/index.js"
+	},
+	"dependencies": {
+		"dotenv": "^6.2.0",
+		"express": "^4.16.4",
+		"mongoose": "^5.4.0",
+		"socket.io": "^2.2.0"
+	}
 }
