@@ -6,12 +6,16 @@
 	"author": "Michael Roberts",
 	"license": "MIT",
 	"scripts": {
-		"start": "node src/index.js"
+		"start": "node app/index.js",
+		"test": "jest --verbose"
 	},
 	"dependencies": {
 		"dotenv": "^6.2.0",
 		"express": "^4.16.4",
 		"mongoose": "^5.4.0",
 		"socket.io": "^2.2.0"
+	},
+	"devDependencies": {
+		"jest": "^23.6.0"
 	}
 }
