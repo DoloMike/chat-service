@@ -7,7 +7,9 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "node app/index.js",
-		"test": "jest --verbose"
+		"test": "yarn test:unit",
+		"test:unit": "jest ./app/__tests__/unit --verbose",
+		"test:e2e": "jest ./app/__tests__/e2e --verbose"
 	},
 	"dependencies": {
 		"dotenv": "^6.2.0",
