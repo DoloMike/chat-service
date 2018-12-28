@@ -1,80 +1,25 @@
-const rooms = 'rooms';
-const messages = 'messages';
-
 const roomController = (redis) => {
+	const roomsKey = `rooms`;
+
 	return {
 		/**
-		 * @description Adds a new message to a given room
-		 * @param {number} roomId The id of the chat room to add the message
-		 * @param {{content: string, author: string, createdAt: string}} msg The message being appended
+		 * @description Add a new chat room
+		 * @param {{id: string, name: string}} room The room being added
 		 * @returns {boolean} True on successful save to redis, False on failure
 		 */
-		appendMessage: async (roomId, msg) => {
-			const messagesKey = `${rooms}:${roomId}:${messages}`;
-			const res = await redis.lpushAsync(messagesKey, JSON.stringify(msg));
+		addNewRoom: async (room) => {
+			const res = await redis.rpushAsync(roomsKey, JSON.stringify(room));
 			return res > 0;
 		},
 
 		/**
-		 * @description Gets n amount of the most recent messages for a given room, skipping the first m messages
-		 * @param {number} roomId The id of the chat room to fetch messages from
-		 * @param {number} messageCount The amount of messages to fetch
-		 * @param {number} skip The amount of messages to skip. Assuming order by most recent.
-		 * @returns {Array.<{content: string, author: string, createdAt: string}>} Array of msg objects
+		 * @description Get all message rooms		 
+		 * @returns {Array.<{roomName: string, roomId: string}>} Array of room objects
 		 */
-		getMessages: async (roomId, messageCount, skip) => {
-			const messagesKey = `${rooms}:${roomId}:${messages}`;
-			const msgs = await redis.lrangeAsync(messagesKey, skip, messageCount + skip);
-			return msgs.map((m) => JSON.parse(m)).reverse();
+		getRooms: async () => {
+			const rooms = await redis.lrangeAsync(roomsKey, 0, -1);
+			return rooms.map((m) => JSON.parse(m));
 		}
-
-		// /**
-		//  * Returns a room json document
-		//  * @param {string} id - The id of the room to get
-		//  */
-		// getRoom: async (id) => {
-		// 	try {
-		// 		return await redis.findById(id);
-		// 	} catch (err) {
-		// 		return res.status(500).json({
-		// 			message: `Error when getting chat room ${id}`,
-		// 			error: err
-		// 		});
-		// 	}
-		// },
-
-		// /**
-		//  * Returns the id and name of all chat rooms
-		//  */
-		// listRooms: async () => {
-		// 	try {
-		// 		return await redis.find({}, 'name');
-		// 	} catch (err) {
-		// 		return res.status(500).json({
-		// 			message: 'Error when getting chat rooms',
-		// 			error: err
-		// 		});
-		// 	}
-		// },
-
-		// /**
-		//  * Returns the id and name of all chat rooms
-		//  */
-		// addRoom: async (roomName) => {
-		// 	const room = {
-		// 		roomName: roomName,
-		// 		messages: []
-		// 	};
-
-		// 	try {
-		// 		return await room.save();
-		// 	} catch (err) {
-		// 		return res.status(500).json({
-		// 			message: `Error when getting chat room ${room.roomName}`,
-		// 			error: err
-		// 		});
-		// 	}
-		// }
 	};
 };
 

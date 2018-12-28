@@ -1,47 +1,26 @@
-// const roomModel = require('../../models/roomModel');
-// const roomController = require('../../controllers/roomController');
+const mockRoomData = [ { id: '1', name: 'a chat room' }, { id: '2', name: 'another chat room' } ];
 
-// describe('room controller', () => {
-// 	const mockRoomData = { 1: { name: 'room1' }, 2: { name: 'room2' } };
+const redisMock = {
+	rpushAsync: async (roomsKey, roomJson) => {
+		return 1;
+	},
+	lrangeAsync: async (roomsKey, startIndex, stopIndex) => {
+		return mockRoomData.map((m) => JSON.stringify(m));
+	}
+};
 
-// 	test('it returns a list of rooms', async (done) => {
-// 		// mock Model.find()
-// 		const RoomFindMock = jest.spyOn(roomModel, 'find');
-// 		const RoomFind = jest.fn((query, fields, obj) => {
-// 			return Promise.resolve(mockRoomData);
-// 		});
-// 		RoomFindMock.mockImplementation(RoomFind);
+const roomController = require('../../controllers/roomController')(redisMock);
 
-// 		const roomsResult = await roomController(roomModel).listRooms();
-// 		expect(roomsResult).toEqual(mockRoomData);
-// 		done();
-// 	});
+describe('room controller', () => {
+	test('it returns an array of room objects', async (done) => {
+		const rooms = await roomController.getRooms('key', 0, 0);
+		expect(rooms).toEqual(mockRoomData);
+		done();
+	});
 
-// 	test('it returns a room by id', async (done) => {
-// 		// mock Model.findById()
-// 		const RoomFindByIdMock = jest.spyOn(roomModel, 'findById');
-// 		const RoomFindById = jest.fn((id) => {
-// 			return Promise.resolve(mockRoomData[id]);
-// 		});
-// 		RoomFindByIdMock.mockImplementation(RoomFindById);
-
-// 		const roomId = 1;
-// 		const roomsResult = await roomController(roomModel).getRoom(roomId);
-// 		expect(roomsResult).toEqual(mockRoomData[roomId]);
-// 		done();
-// 	});
-
-// 	test('it can save a new room', async (done) => {
-// 		// mock Model.save()
-// 		const room = { name: 'room1' };
-// 		const RoomSaveMock = jest.spyOn(roomModel.prototype, 'save');
-// 		const RoomSave = jest.fn(() => {
-// 			return Promise.resolve(room);
-// 		});
-// 		RoomSaveMock.mockImplementation(RoomSave);
-
-// 		const roomResult = await roomController(roomModel).addRoom(room.name);
-// 		expect(roomResult).toEqual(room);
-// 		done();
-// 	});
-// });
+	test('it adds a new room', async (done) => {
+		const res = await roomController.addNewRoom(1, mockRoomData[0]);
+		expect(res).toBeTruthy();
+		done();
+	});
+});
