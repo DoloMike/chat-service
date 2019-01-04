@@ -18,6 +18,7 @@ const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const roomController = require('./controllers/roomController')(redis);
+const messageController = require('./controllers/messageController')(redis);
 
 // allow cors and define WS events
 io.origins('*:*');
@@ -38,12 +39,12 @@ io.on('connection', async (socket) => {
 	// upon joining a room, load the most recent messages.
 	// TODO: implement join_room event for initial load
 	socket.on('requesting_messages', async (roomId, msgCount = 19, skip = 0) => {
-		const msgs = await roomController.getMessages(roomId, msgCount, skip);
+		const msgs = await messageController.getMessages(roomId, msgCount, skip);
 		socket.emit('loaded_messages', msgs);
 	});
 
 	socket.on('new_message', async (roomId, msg) => {
-		res = await roomController.appendMessage(roomId, msg);
+		res = await messageController.appendMessage(roomId, msg);
 		if (res) {
 			io.emit('new_message_broadcast', msg);
 		}
